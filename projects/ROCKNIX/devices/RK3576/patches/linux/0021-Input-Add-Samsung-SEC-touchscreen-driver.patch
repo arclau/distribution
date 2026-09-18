@@ -35,10 +35,17 @@ diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Make
 index ab9abd1..fe47cdb 100644
 --- a/drivers/input/touchscreen/Makefile
 +++ b/drivers/input/touchscreen/Makefile
-@@ -120,3 +120,5 @@ obj-$(CONFIG_TOUCHSCREEN_IQS5XX)	+= iqs5xx.o
+@@ -120,3 +120,4 @@ obj-$(CONFIG_TOUCHSCREEN_IQS5XX)	+= iqs5xx.o
  obj-$(CONFIG_TOUCHSCREEN_IQS7211)	+= iqs7211.o
  obj-$(CONFIG_TOUCHSCREEN_ZINITIX)	+= zinitix.o
  obj-$(CONFIG_TOUCHSCREEN_HIMAX_HX83112B)	+= himax_hx83112b.o
++obj-$(CONFIG_TOUCHSCREEN_SEC_TS)	+= sec_ts/
+diff --git a/drivers/input/touchscreen/sec_ts/Makefile b/drivers/input/touchscreen/sec_ts/Makefile
+new file mode 100644
+index 0000000..1d54082
+--- /dev/null
++++ b/drivers/input/touchscreen/sec_ts/Makefile
+@@ -0,0 +1,2 @@
 +obj-$(CONFIG_TOUCHSCREEN_SEC_TS)	+= sec_ts.o
 +sec_ts-objs := sec_ts_main.o sec_ts_fw.o sec_ts_fn.o sec_ts_selftest.o
 diff --git a/drivers/input/touchscreen/sec_ts/sec_ts.h b/drivers/input/touchscreen/sec_ts/sec_ts.h
