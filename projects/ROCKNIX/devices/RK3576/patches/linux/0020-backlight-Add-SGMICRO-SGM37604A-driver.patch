@@ -5,9 +5,12 @@ Subject: [PATCH] backlight: Add SGMICRO SGM37604A driver
 
 Ported from Radxa ROCK 4D linux-rockchip 6.1 BSP for the
 1080x2160 MIPI panel (rk3576-rock-4d-panel.dtsi). System
-brightness 0-255 maps to 0-70% of the 12-bit hardware range
-as panel overdrive protection. Return values of all regmap
-writes are checked and the enable GPIO error path is handled.
+ brightness 0-255 maps to 0-70% of the 12-bit hardware range
+ as panel overdrive protection. Return values of all regmap
+ writes are checked and the enable GPIO error path is handled.
+ The optional power supply is enabled before the first I2C access
+ and disabled at zero brightness, so the panel VDD rail is on
+ when the chip is probed.
 
 Signed-off-by: ROCKNIX <noreply@rocknix.org>
 ---
@@ -48,10 +51,10 @@ index 794820a..20054b0 100644
  obj-$(CONFIG_BACKLIGHT_ARCXCNN) 	+= arcxcnn_bl.o
 diff --git a/drivers/video/backlight/sgm37604a.c b/drivers/video/backlight/sgm37604a.c
 new file mode 100644
-index 0000000..f2af0ef
+index 0000000..1b2558b
 --- /dev/null
 +++ b/drivers/video/backlight/sgm37604a.c
-@@ -0,0 +1,203 @@
+@@ -0,0 +1,225 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * SGM37604A I2C backlight driver.
@@ -68,6 +71,7 @@ index 0000000..f2af0ef
 +#include <linux/module.h>
 +#include <linux/of.h>
 +#include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
 +
 +#define SGM37604A_MAX_HW_VAL	4095
 +#define SGM37604A_MAX_USER_VAL	255
@@ -85,6 +89,7 @@ index 0000000..f2af0ef
 +	struct regmap *regmap;
 +	struct backlight_device *bl;
 +	struct gpio_desc *en_gpio;
++	struct regulator *supply;
 +	u8 led_channels;
 +	u8 max_current;
 +	bool powered_on;
@@ -100,6 +105,13 @@ index 0000000..f2af0ef
 +static int sgm37604a_hw_init(struct sgm37604a_data *chip)
 +{
 +	int ret;
++
++	if (chip->supply) {
++		ret = regulator_enable(chip->supply);
++		if (ret)
++			return dev_err_probe(chip->dev, ret,
++					     "failed to enable power supply\n");
++	}
 +
 +	if (chip->en_gpio) {
 +		gpiod_set_value_cansleep(chip->en_gpio, 1);
@@ -123,6 +135,8 @@ index 0000000..f2af0ef
 +
 +err:
 +	dev_err(chip->dev, "failed to init hardware registers: %d\n", ret);
++	if (chip->supply)
++		regulator_disable(chip->supply);
 +	return ret;
 +}
 +
@@ -146,6 +160,8 @@ index 0000000..f2af0ef
 +			dev_err(chip->dev, "failed to clear brightness\n");
 +		if (chip->en_gpio)
 +			gpiod_set_value_cansleep(chip->en_gpio, 0);
++		if (chip->supply)
++			regulator_disable(chip->supply);
 +		chip->powered_on = false;
 +		return ret;
 +	}
@@ -211,6 +227,15 @@ index 0000000..f2af0ef
 +	if (IS_ERR(chip->en_gpio))
 +		return dev_err_probe(dev, PTR_ERR(chip->en_gpio),
 +				     "failed to get enable gpio\n");
++
++	chip->supply = devm_regulator_get_optional(dev, "power");
++	if (IS_ERR(chip->supply)) {
++		ret = PTR_ERR(chip->supply);
++		if (ret != -ENODEV)
++			return dev_err_probe(dev, ret,
++					     "failed to get power supply\n");
++		chip->supply = NULL;
++	}
 +
 +	memset(&props, 0, sizeof(props));
 +	props.type = BACKLIGHT_RAW;
