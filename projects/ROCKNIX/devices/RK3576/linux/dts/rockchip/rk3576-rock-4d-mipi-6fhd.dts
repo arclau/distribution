@@ -3,9 +3,8 @@
  * Copyright (c) 2024 Radxa Computer (Shenzhen) Co., Ltd.
  *
  * ROCK 4D MIPI 6FHD variant: upstream rk3576-rock-4d plus the
- * 1080x2160 MIPI panel from the 6.1 BSP (rk3576-rock-4d-panel.dtsi).
- * Panel/backlight/touch translated to rocknix,generic-dsi +
- * sgm37604a/sec_ts drivers (see vendor/rock4d-6.1-orig).
+ * 1080x2160 MIPI panel from the 6.1 BSP. Panel/backlight/touch
+ * use rocknix,generic-dsi and sgm37604a/sec_ts drivers.
  */
 
 /dts-v1/;
