@@ -1,0 +1,10 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2026 ROCKNIX (https://github.com/ROCKNIX)
+
+# Portrait 1080x2160 panel mounted for landscape use.
+# 111-sway-init reads fbcon rotate to set the sway output transform.
+if [ -f "/sys/devices/virtual/graphics/fbcon/rotate" ]
+then
+  echo 3 > /sys/devices/virtual/graphics/fbcon/rotate
+fi
