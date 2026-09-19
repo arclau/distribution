@@ -298,6 +298,7 @@
 		reset-gpios = <&gpio0 RK_PD1 GPIO_ACTIVE_LOW>;
 		pinctrl-0 = <&lcd_rst>;
 		pinctrl-names = "default";
+		rotation = <270>;
 		vdd-supply = <&vcc_3v3_lcd0_n>;
 		iovcc-supply = <&vcc_1v8_s0>;
 		/* 6.1 vendor: 1080x2160, 4 lanes, rgb888, 157MHz, flags 0xe03 */
@@ -345,6 +346,7 @@
 
 &gpu {
 	mali-supply = <&vdd_gpu_s0>;
+	resets = <&cru SRST_GPU>;
 	status = "okay";
 };
 
@@ -908,7 +910,7 @@
 &sfc0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&fspi0_pins &fspi0_csn0>;
-	status = "okay";
+	status = "disabled";
 
 	flash@0 {
 		compatible = "jedec,spi-nor";
@@ -948,7 +950,7 @@
 	vcc-supply = <&vcc_3v3_s0>;
 	vccq-supply = <&vcc_1v2_ufs_vccq_s0>;
 	vccq2-supply = <&vcc_1v8_ufs_vccq2_s0>;
-	status = "okay";
+	status = "disabled";
 };
 
 &usbdp_phy {
