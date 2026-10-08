@@ -1,12 +1,9 @@
 name: Update mirror sources
 on:
-  schedule:
-    - cron: "0 22 * * 0"
   workflow_dispatch:
   workflow_call:
 jobs:
   get-sources:
-    if: (github.event_name != 'schedule') || (github.repository == 'ROCKNIX/distribution' && github.ref_name == 'next')
     name: Get sources (${{ matrix.device }})
     runs-on: ubuntu-24.04
     env:

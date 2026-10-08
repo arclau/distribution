@@ -1,10 +1,6 @@
 name: Validate pull request
 on:
-  pull_request:
-    branches: [next]
-    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
-  merge_group:
-    branches: [next]
+  workflow_dispatch:
 jobs:
   validate-commit:
     runs-on: self-hosted
